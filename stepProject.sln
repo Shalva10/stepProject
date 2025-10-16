@@ -5,13 +5,13 @@ VisualStudioVersion = 17.14.36127.28
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stepProject", "stepProject.csproj", "{9A0AFD1A-8BA1-491F-94C5-8D0968B4BEC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManHang", "..\ManHang\ManHang.csproj", "{8BC07C1D-97CA-4788-830B-514C7D1BB7F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManHang", "ManHang\ManHang.csproj", "{8BC07C1D-97CA-4788-830B-514C7D1BB7F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator", "..\Calculator\Calculator.csproj", "{8635AEA2-8AF3-4EC3-B395-0639F56E7ED6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator", "Calculator\Calculator.csproj", "{8635AEA2-8AF3-4EC3-B395-0639F56E7ED6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translate", "..\Translate\Translate.csproj", "{FB1635DF-B56C-4205-B815-171D3EE03B1C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translate", "Translate\Translate.csproj", "{FB1635DF-B56C-4205-B815-171D3EE03B1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookOop", "..\BookOop\BookOop.csproj", "{438495C6-F93C-4530-A639-EADEBDC3C730}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookOop", "BookOop\BookOop.csproj", "{438495C6-F93C-4530-A639-EADEBDC3C730}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
