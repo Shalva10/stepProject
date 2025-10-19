@@ -76,6 +76,16 @@ namespace BookOop.Services
             }
         }
 
+        public void SortBooksByGenre()
+        {
+            var sorted = _list.OrderBy(b => b.Genre).ToList();
+            Console.WriteLine("Books sorted by genre:");
+            foreach (var b in sorted)
+            {
+                Console.WriteLine($"ID: {b.Id}, Title: {b.Title}, Author: {b.Author}, Genre: {b.Genre}, Year: {b.Year}");
+            }
+        }
+
         public void RemoveAllBooks()
         {
             _list.Clear();

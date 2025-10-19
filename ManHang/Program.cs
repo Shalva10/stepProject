@@ -1,97 +1,107 @@
-﻿string[] words = { "apple", "banana", "computer", "program", "keyboard", "pneumonoultramicroscopicsilicovolcanoconiosis" };
+﻿using ManHang;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-Random rand = new Random();
-int wordIndex = rand.Next(0, words.Length);
-string selectedWord = words[wordIndex];
+bool playAgain = true;
 
-char[] hiddenWord = new char[selectedWord.Length];
-for (int i = 0; i < hiddenWord.Length; i++)
+while (playAgain)
 {
-    hiddenWord[i] = '_';
-}
+    string[] words = Words.GetWords();
+    Random rand = new Random();
+    string selectedWord = words[rand.Next(words.Length)].ToLower();
 
-List<char> guessedLetters = new List<char>();
-int maxAttempts = 6;
-int attemptsLeft = maxAttempts;
-
-Console.WriteLine("HANGMAN");
-
-while (attemptsLeft > 0)
-{
-    Console.Write("Word: ");
+    char[] hiddenWord = new char[selectedWord.Length];
     for (int i = 0; i < hiddenWord.Length; i++)
     {
-        Console.Write(hiddenWord[i] + " ");
+        hiddenWord[i] = '_';
     }
 
-    Console.WriteLine("Attempts left: " + attemptsLeft);
-    Console.Write("Enter a letter: ");
-    string input = Console.ReadLine();
+    List<char> guessedLetters = new List<char>();
+    int maxAttempts = 6;
+    int attemptsLeft = maxAttempts;
 
-    if (input == null || input.Length != 1)
+    Console.WriteLine("HANGMAN");
+
+    while (attemptsLeft > 0)
     {
-        Console.WriteLine("Please enter one letter.");
-        continue;
-    }
-
-    char guess = input[0];
-
-    bool alreadyGuessed = false;
-    for (int i = 0; i < guessedLetters.Count; i++)
-    {
-        if (guessedLetters[i] == guess)
+        Console.Write("Word: ");
+        for (int i = 0; i < hiddenWord.Length; i++)
         {
-            alreadyGuessed = true;
+            Console.Write(hiddenWord[i] + " ");
+        }
+        Console.WriteLine();
+
+        Console.WriteLine("Attempts left: " + attemptsLeft);
+        Console.Write("Enter your guess (one or more letters): ");
+        string input = Console.ReadLine().ToLower();
+
+        if (string.IsNullOrWhiteSpace(input) || !input.All(char.IsLetter))
+        {
+            Console.WriteLine("Please enter valid letter(s).");
+            continue;
+        }
+
+        bool foundAny = false;
+
+        foreach (char guess in input)
+        {
+            if (guessedLetters.Contains(guess))
+                continue;
+
+            guessedLetters.Add(guess);
+
+            bool found = false;
+            for (int i = 0; i < selectedWord.Length; i++)
+            {
+                if (selectedWord[i] == guess)
+                {
+                    hiddenWord[i] = guess;
+                    found = true;
+                }
+            }
+
+            if (found)
+                foundAny = true;
+        }
+
+        if (foundAny)
+        {
+            Console.WriteLine("Correct!");
+        }
+        else
+        {
+            Console.WriteLine("Wrong!");
+            attemptsLeft--;
+        }
+
+        bool allGuessed = true;
+        for (int i = 0; i < hiddenWord.Length; i++)
+        {
+            if (hiddenWord[i] == '_')
+            {
+                allGuessed = false;
+                break;
+            }
+        }
+
+        if (allGuessed)
+        {
+            Console.WriteLine("Congratulations! You guessed the word: " + selectedWord);
             break;
         }
     }
 
-    if (alreadyGuessed)
+    if (attemptsLeft == 0)
     {
-        Console.WriteLine("You already guessed that letter.");
-        continue;
+        Console.WriteLine("You lost! The word was: " + selectedWord);
     }
 
-    guessedLetters.Add(guess);
-
-    bool found = false;
-    for (int i = 0; i < selectedWord.Length; i++)
+    Console.Write("Do you want to play again? (y/n): ");
+    string response = Console.ReadLine().Trim().ToLower();
+    if (response != "y")
     {
-        if (selectedWord[i] == guess)
-        {
-            hiddenWord[i] = guess;
-            found = true;
-        }
+        playAgain = false;
+        Console.WriteLine("Thanks for playing!");
     }
-
-    if (found)
-    {
-        Console.WriteLine("Correct!");
-    }
-    else
-    {
-        Console.WriteLine("Wrong!");
-        attemptsLeft--;
-    }
-
-    bool allGuessed = true;
-    for (int i = 0; i < hiddenWord.Length; i++)
-    {
-        if (hiddenWord[i] == '_')
-        {
-            allGuessed = false;
-            break;
-        }
-    }
-
-    if (allGuessed)
-    {
-        Console.WriteLine("Congratulations! You guessed the word: " + selectedWord);
-        break;
-    }
-}
-
-if (attemptsLeft == 0)
-{
-    Console.WriteLine("You lost! The word was: " + selectedWord);
 }
