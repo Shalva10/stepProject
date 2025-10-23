@@ -1,21 +1,25 @@
 ﻿using StudentOop.Students;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace StudentOop.StudentServices
 {
     public class StudentServices
     {
+        private List<Students.Students> students;
+        private readonly string filePath;
 
-        private List<Students.Students> students = new List<Students.Students>();
+        public StudentServices(string path)
+        {
+            filePath = path;
+            students = LoadFromFile();
+        }
 
         public void AddStudent()
         {
             Console.Write("Enter Student Name: ");
             string name = Console.ReadLine();
+            Console.Write("Enter Student Lastname: ");
+            string lastname = Console.ReadLine();
 
             int rollNumber;
             while (true)
@@ -42,14 +46,15 @@ namespace StudentOop.StudentServices
             }
 
             students.Add(new Students.Students(name, rollNumber, char.ToUpper(grade)));
-            Console.WriteLine("Student added successfully.\n");
+            SaveToFile();
+            Console.WriteLine("Student added successfully.");
         }
 
         public void ViewAllStudents()
         {
             if (students.Count == 0)
             {
-                Console.WriteLine("No students found.\n");
+                Console.WriteLine("No students found.");
                 return;
             }
 
@@ -95,6 +100,7 @@ namespace StudentOop.StudentServices
                     if (char.TryParse(Console.ReadLine(), out char newGrade) && "ABCDEF".Contains(char.ToUpper(newGrade)))
                     {
                         student.Grade = char.ToUpper(newGrade);
+                        SaveToFile();
                         Console.WriteLine("Grade updated successfully.");
                     }
                     else
@@ -113,5 +119,33 @@ namespace StudentOop.StudentServices
             }
         }
 
+        private List<Students.Students> LoadFromFile()
+        {
+            try
+            {
+                string json = File.ReadAllText(filePath);
+                var loadedStudents = JsonSerializer.Deserialize<List<Students.Students>>(json);
+
+                if (loadedStudents != null)
+                {
+                    return loadedStudents;
+                }
+                else
+                {
+                    return new List<Students.Students>();
+                }
+            }
+            catch
+            {
+                return new List<Students.Students>();
+            }
+        }
+
+
+        private void SaveToFile()
+        {
+            string json = JsonSerializer.Serialize(students, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(filePath, json);
+        }
     }
 }

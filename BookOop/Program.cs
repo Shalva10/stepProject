@@ -1,5 +1,6 @@
 ﻿using BookOop.Books;
 using BookOop.Services;
+using System.Text.Json;
 
 BooksService library = new BooksService();
 
@@ -17,12 +18,14 @@ if (!File.Exists(path))
     File.Create(path).Close();
 }
 
+File.WriteAllText(path, "[]");
+
 library.AddBook(new Books { Id = 1, Title = "The Raven", Author = "Hidetaka Miyazaki", Genre = "Action", Year = 2023 });
 library.AddBook(new Books { Id = 2, Title = "Don Quixote", Author = "Miguel de Cervantes", Genre = "Psychological Fiction", Year = 1605 });
 library.AddBook(new Books { Id = 3, Title = "The Lion, the Witch and the Wardrobe", Genre = "Fantasy", Author = "C.S. Lewis", Year = 2005 });
-library.AddBook(new Books { Id = 4, Title = "Harry Potter", Author = "J.K. Rowling", Genre = "Fanatsy, Philosophy", Year = 2016 });
+library.AddBook(new Books { Id = 4, Title = "Harry Potter", Author = "J.K. Rowling", Genre = "Philosophy", Year = 2016 });
 library.AddBook(new Books { Id = 5, Title = "One Piece", Author = "Eichiro Oda", Genre = "Adventure, Action", Year = 1998 });
-library.AddBook(new Books { Id = 5, Title = "The Hobbit", Author = "John Ronald Reuel Tolkien", Genre = "Action", Year = 1998 });
+library.AddBook(new Books { Id = 6, Title = "The Hobbit", Author = "John Ronald Reuel Tolkien", Genre = "Action", Year = 1998 });
 
 bool running = true;
 
@@ -52,7 +55,13 @@ while (running)
             Console.WriteLine("Enter Book Year");
             var year = Convert.ToInt32(Console.ReadLine());
 
-            int id = lastBook != null ? lastBook.Id + 1 : 0;
+            int id = 0;
+
+            if (lastBook != null) 
+            {
+                id = lastBook.Id + 1;
+            }
+
 
             if (author != null && title != null)
             {
@@ -63,11 +72,16 @@ while (running)
                 {
                     Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Author: {book.Author}, Year: {book.Year}");
                 }
+
+                var wholeLibrary1 = library.GetAllBooks();
+                var serialized1 = JsonSerializer.Serialize(wholeLibrary1, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(path, serialized1);
             }
             else
             {
                 Console.WriteLine("Author and Title cannot be null");
             }
+
             break;
 
         case "2":
@@ -75,6 +89,10 @@ while (running)
             {
                 Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Author: {book.Author}, Year: {book.Year}");
             }
+            var wholeLibrary = library.GetAllBooks();
+
+            var serialized = JsonSerializer.Serialize(wholeLibrary, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(path, serialized);
             break;
 
         case "3":
@@ -86,40 +104,84 @@ while (running)
                 library.GetBookByAuthor(bookAuthor);
             }
 
+            var wholeLibrary3 = library.GetAllBooks();
+            var serialized3 = JsonSerializer.Serialize(wholeLibrary3, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(path, serialized3);
             break;
 
         case "4":
             Console.WriteLine("Enter the ID of the book you want to delete");
             var bookId = Convert.ToInt32(Console.ReadLine());
             library.RemoveBookById(bookId);
+
+            var wholeLibrary4 = library.GetAllBooks();
+            var serialized4 = JsonSerializer.Serialize(wholeLibrary4, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(path, serialized4);
             break;
 
         case "5":
-            library.SortBooksByAuthor();
-            Console.WriteLine("The books were sorted by author name in alphabetical order");
+            var sortedBooks = library.GetAllBooks().OrderBy(b => b.Author).ToList();
+            Console.WriteLine("Books sorted by author:");
+            foreach (var b in sortedBooks)
+            {
+                Console.WriteLine($"ID: {b.Id}, Title: {b.Title}, Author: {b.Author}, Year: {b.Year}");
+            }
+
+            var serialized5 = JsonSerializer.Serialize(sortedBooks, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(path, serialized5);
+            Console.WriteLine("The books were sorted by author name in alphabetical order and saved to JSON.\n");
             break;
 
         case "6":
             Console.WriteLine("Enter genre name to filter (e.g., Fantasy, Action, Adventure, Philosophy, Psychological Fiction):");
             string genreInput = Console.ReadLine();
 
-            if (!string.IsNullOrWhiteSpace(genreInput))
+            if (!string.IsNullOrEmpty(genreInput))
             {
-                var booksByGenre = allBooks
-                    .Where(b => b.Genre != null && b.Genre.Equals(genreInput, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                string genreToMatch = genreInput.Trim().ToLower();
 
-                if (booksByGenre.Any())
+                var booksByGenre = new List<Books>();
+
+                foreach (var book in allBooks)
                 {
-                    Console.WriteLine($"Books in genre '{genreInput}':");
+                    if (book.Genre != null)
+                    {
+                        string genreStr = book.Genre;
+                        int start = 0;
+
+                        for (int i = 0; i <= genreStr.Length; i++)
+                        {
+                            if (i == genreStr.Length || genreStr[i] == ',')
+                            {
+                                string part = genreStr.Substring(start, i - start).Trim().ToLower();
+
+                                if (part == genreToMatch)
+                                {
+                                    booksByGenre.Add(book);
+                                    break;
+                                }
+
+                                start = i + 1;
+                            }
+                        }
+                    }
+                }
+
+                if (booksByGenre.Count > 0)
+                {
+                    Console.WriteLine("Books in genre '" + genreInput + "':");
                     foreach (var book in booksByGenre)
                     {
-                        Console.WriteLine($"ID: {book.Id}, Title: {book.Title}, Author: {book.Author}, Genre: {book.Genre}, Year: {book.Year}");
+                        Console.WriteLine("ID: " + book.Id + ", Title: " + book.Title + ", Author: " + book.Author + ", Genre: " + book.Genre + ", Year: " + book.Year);
                     }
+
+                    var serializedBooks = JsonSerializer.Serialize(booksByGenre, new JsonSerializerOptions { WriteIndented = true });
+                    File.WriteAllText(path, serializedBooks);
+                    Console.WriteLine("Filtered books saved to JSON.");
                 }
                 else
                 {
-                    Console.WriteLine($"No books found in genre '{genreInput}'");
+                    Console.WriteLine("No books found in genre '" + genreInput + "'.");
                 }
             }
             else
@@ -127,6 +189,7 @@ while (running)
                 Console.WriteLine("Invalid genre input.");
             }
             break;
+
 
         case "7":
             Console.WriteLine("are you sure you want to remove all books, y/n");
@@ -144,6 +207,10 @@ while (running)
             {
                 Console.WriteLine("shen xar cudi biwi ^-^ ");
             }
+
+            var wholeLibrary7 = library.GetAllBooks();
+            var serialized7 = JsonSerializer.Serialize(wholeLibrary7, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(path, serialized7);
             break;
 
         case "0":
@@ -155,5 +222,4 @@ while (running)
             Console.WriteLine("Error try again");
             break;
     }
-
 }

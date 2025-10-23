@@ -1,8 +1,5 @@
 ﻿using StudentOop.StudentServices;
 
-StudentServices studentService = new StudentServices();
-bool exit = false;
-
 var folder = "C:\\Users\\short\\OneDrive\\Documents\\StudentOop";
 var file = "StudentOop.json";
 var path = Path.Combine(folder, file);
@@ -14,8 +11,11 @@ if (!Directory.Exists(folder))
 
 if (!File.Exists(path))
 {
-    File.Create(path).Close();
+    File.WriteAllText(path, "[]");
 }
+
+StudentServices studentService = new StudentServices(path);
+bool exit = false;
 
 while (!exit)
 {

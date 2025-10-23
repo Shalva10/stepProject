@@ -1,12 +1,12 @@
-﻿using Translate.Models;
+﻿using System;
+using System.Text.Json;
+using Translate.Models;
 using Translate.Services;
 
 
 var folder = "C:\\Users\\short\\OneDrive\\Documents\\TranslateFolder";
 var file = "Translate.json";
 var path = Path.Combine(folder, file);
-
-TranslateService trServices = new TranslateService("path");
 
 if (!Directory.Exists(folder))
 {
@@ -17,6 +17,8 @@ if (!File.Exists(path))
 {
     File.Create(path).Close();
 }
+
+TranslateService trServices = new TranslateService(path);
 
 while (true)
 {
@@ -41,10 +43,15 @@ while (true)
         {
             trServices.AddTranslate(new Translate.Models.Translate
             {
-                Destination = userSuggestion,
+                Translation = userSuggestion,
                 Language = res,
                 Source = sityva,
             });
+
+            var allTranslates = trServices.GetTranslates();
+
+            var serialized = JsonSerializer.Serialize(allTranslates, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(path, serialized);
         }
     }
 

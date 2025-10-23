@@ -1,4 +1,7 @@
-﻿namespace Translate.Services
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace Translate.Services
 {
     public class TranslateService
     {
@@ -10,10 +13,12 @@
             translates = new List<Models.Translate>();
         }
 
-        public Models.Translate GetTranslate(string language = "Ge-En", string text = "გამარჯობა")
+        public Models.Translate GetTranslate(string language, string text)
         {
+            
             return translates.FirstOrDefault(i => i.Language == language && i.Source == text);
         }
+
 
         public List<Models.Translate> GetTranslates()
         {
@@ -22,14 +27,17 @@
 
         public void AddTranslate(Models.Translate req)
         {
-            var exist = translates.FirstOrDefault(i => i.Language == req.Language && i.Source == req.Source && i.Destination == req.Destination);
-            if (exist != null)
+            var exist = translates.FirstOrDefault(i => i.Language == req.Language && i.Source == req.Source && i.Translation == req.Translation);
+
+
+            if (exist != null)  
             {
                 Console.WriteLine("msgavsi chanaweri ukve arsebobs");
             }
             else
             {
                 translates.Add(req);
+                
             }
         }
     }

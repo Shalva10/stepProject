@@ -9,6 +9,7 @@ namespace StudentOop.Students
     public class Students
     {
         public string Name { get; set; }
+        public string LastName { get; set; }
         public int RollNumber { get; set; }
         public char Grade { get; set; }
 
